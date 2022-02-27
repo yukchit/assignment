@@ -462,6 +462,38 @@ const main = async () => {
     
     }
 
+    let reinvestingCakeBnbLP = async() => {
+        cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
+        console.log(`Wallet - CAKE-BNB LP Balance: ${web3.utils.fromWei(cakeBnbBalance, "ether")}`);
+
+        let data = masterChefContract.methods.deposit(
+            cakeBnbPid,
+            web3.utils.toWei('0.001', 'ether')
+            );
+
+        let count = await web3.eth.getTransactionCount(senderAddress);
+
+        var rawTransaction = {
+            nonce: web3.utils.toHex(count),
+            gasPrice: web3.utils.toHex(gasPrice),
+            gasLimit: web3.utils.toHex(gasLimit),
+            to: masterChefAddress,
+            value: web3.utils.toHex(web3.utils.toWei('0', 'ether')),
+            data: data.encodeABI(),
+            chainId: chainId,
+            from: senderAddress
+        };  
+
+        let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
+        transaction.sign(privateKey);
+
+        let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
+        console.log(result)
+        result.status === true ? console.log("Succussfully Re-investing CAKE-BNB LP into the farm!") : console.log("Fail to re-investing CAKE-BNB LP")
+        return result;
+        
+    }
+
 
 
 
@@ -471,7 +503,9 @@ const main = async () => {
             //     if (!r) {
             //         harvestCake().then(() => {
             //             swapHalfOfCake().then(()=> {
-                            addLiquidityV2();
+                            // addLiquidityV2().then(() => {
+                                reinvestingCakeBnbLP();
+                            // })
             //             })
             //         })
             //     } else {
