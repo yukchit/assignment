@@ -39,7 +39,7 @@ It also estimate all the gas fees needed for the transactions for each auto-comp
 1. It would continuously to auto-compound. 
 2. In case there is no liquidity of CAKE-BNB, it would stop re-investing for this particular time.
 3. But it would still be triggered to start auto-compounding again by next time interval.
-4. For this version 1 auto-compounder, the time-interval can be simply increased by changing the code to trigger to avoid spending too much gas fees by getting too less CAKE reward by harvesting.
+4. For this Auto-Compounder(Ver.1) the time-interval can be simply increased by changing the code to trigger to avoid spending too much gas fees by getting too less CAKE reward by harvesting.
 
 ---
 ## Start the Auto-Compounder (Ver. 2)
