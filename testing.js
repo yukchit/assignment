@@ -85,6 +85,7 @@ const main = async () => {
     
     let cakeBalance, cakeBnbBalance, totalCostOfGasFees, gasPrice;
     let gasLimit = 500000;
+    // let gasPriceInGwei = 10; // in gwei
     let chainId = 56;
 
 
@@ -105,6 +106,7 @@ const main = async () => {
         let pendingCake = await masterChefContract.methods.pendingCake(cakeBnbPid, senderAddress).call();
         console.log(`Farm - Pending CAKE from CAKE-BNB LP Farm: ${web3.utils.fromWei(pendingCake,"ether")}\n`);
     
+        // console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
     }
 
     let estimateTotalCostOfGasFees = async () => {
@@ -119,7 +121,7 @@ const main = async () => {
         let gasCostForHarvestingCake = gasForHarvest * gasPrice;
         console.log(`Gas Cost for Harvesting CAKE: ${web3.utils.fromWei(gasCostForHarvestingCake.toString(),"ether")} BNB\n`);
 
-        let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((Math.floor(parseInt(cakeBalance) / 2)).toString());
+        let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((parseInt(cakeBalance) / 2).toString());
 
         let gasForSwap = await pancakeRouterContract.methods.swapExactTokensForETH(
             pricesOfHalfOfCakeBalance[0],
@@ -246,10 +248,8 @@ const main = async () => {
 
     let addLiquidityV2 = async() => {
         let cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
-        let cakeBalance = await cakeContract.methods.balanceOf(senderAddress).call();
-
         let bnb = 0.0001;
-        let pricesOfCakeAndBnb = await calcPricesBetweenCakeAndBnb(cakeBalance);
+        let pricesOfCakeAndBnb = await calcPricesBetweenCakeAndBnb(cakeBnbBalance);
         let count = await web3.eth.getTransactionCount(senderAddress);
         // console.log(`addliquidity - nonce: ${count}`);
 
@@ -279,7 +279,7 @@ const main = async () => {
 
         var result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
         result.status === true ? console.log('\x1b[94m\x1b[51m%s\x1b[0m', "Succussfully Add Liquidity to CAKE-BNB!\n") : console.log("Fail to Add Liquidity to CAKE-BNB\n");
-        return true;    
+        return result;    
     
     }
 
@@ -287,39 +287,34 @@ const main = async () => {
         cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
         // console.log(`Wallet - CAKE-BNB LP Balance: ${web3.utils.fromWei(cakeBnbBalance, "ether")}`);
 
-        if (parseInt(cakeBnbBalance) === 0) {
-            console.log('\x1b[91m\x1b[51m%s\x1b[0m', "Liquidity is ZERO, Auto-Compouding is STOPPING NOW\n")
-            return;
-        } else {
-            let count = await web3.eth.getTransactionCount(senderAddress);
-            // console.log(`reinvest - nonce: ${count}`);
+        let count = await web3.eth.getTransactionCount(senderAddress);
+        // console.log(`reinvest - nonce: ${count}`);
 
-            let data = masterChefContract.methods.deposit(
-                cakeBnbPid,
-                cakeBnbBalance
-                );
+        let data = masterChefContract.methods.deposit(
+            cakeBnbPid,
+            cakeBnbBalance
+            );
 
-            // let count = await web3.eth.getTransactionCount(senderAddress);
+        // let count = await web3.eth.getTransactionCount(senderAddress);
 
-            var rawTransaction = {
-                nonce: web3.utils.toHex(count),
-                gasPrice: web3.utils.toHex(gasPrice),
-                gasLimit: web3.utils.toHex(gasLimit),
-                to: masterChefAddress,
-                value: web3.utils.toHex(web3.utils.toWei('0', 'ether')),
-                data: data.encodeABI(),
-                chainId: chainId,
-                from: senderAddress
-            };  
+        var rawTransaction = {
+            nonce: web3.utils.toHex(count),
+            gasPrice: web3.utils.toHex(gasPrice),
+            gasLimit: web3.utils.toHex(gasLimit),
+            to: masterChefAddress,
+            value: web3.utils.toHex(web3.utils.toWei('0', 'ether')),
+            data: data.encodeABI(),
+            chainId: chainId,
+            from: senderAddress
+        };  
 
-            let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
-            transaction.sign(privateKey);
+        let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
+        transaction.sign(privateKey);
 
-            let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
-            result.status === true ? console.log('\x1b[95m\x1b[51m%s\x1b[0m', "Succussfully Re-investing CAKE-BNB LP into the farm!\n") : console.log("Fail to re-investing CAKE-BNB LP\n");
-            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n");
-            return;
-        }
+        let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
+        result.status === true ? console.log('\x1b[95m\x1b[51m%s\x1b[0m', "Succussfully Re-investing CAKE-BNB LP into the farm!\n") : console.log("Fail to re-investing CAKE-BNB LP\n");
+        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n");
+        return result;
         
     }
 
@@ -349,14 +344,10 @@ const main = async () => {
                     // if (!r) {
                         harvestCake().then(() => {
                             swapHalfOfCake().then(()=> {
-                                addLiquidityV2().then(r => {
-                                    if (!r) {
+                                addLiquidityV2().then(() => {
+                                    reinvestingCakeBnbLP().then(()=>{
                                         console.log("Waiting for next Auto-Compounding...\n")
-                                    } else {
-                                        reinvestingCakeBnbLP().finally(()=>{
-                                            console.log("Waiting for next Auto-Compounding...\n")
-                                        })
-                                    }
+                                    })
                                 })
                             })
                         })
@@ -367,6 +358,10 @@ const main = async () => {
             })
         })
     }, 30000);
+
+    cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
+    console.log(cakeBnbBalance);
+
 
     // pancakeFactory.on('PairCreated', async (token0, token1, pairAddress) => {
     //     console.log(`
