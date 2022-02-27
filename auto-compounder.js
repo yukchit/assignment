@@ -242,88 +242,35 @@ const main = async () => {
     let swapHalfOfCake = async() => {
         let cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
         let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((parseInt(cakeBalance) / 2).toString());
+        let pricesFromLittleCake = await calcPricesBetweenCakeAndBnb(web3.utils.toWei('0.001', 'ether'));
 
-        web3.eth.getTransactionCount(senderAddress, 'pending', function(nonceErr, nonceResponse) {
-            if (!nonceErr) {
-                // console.log(nonceResponse);
-                // console.log(1);
-                var nonce = nonceResponse+1;
-                var txParams = {
-                    gas: web3.utils.toHex(gasLimit),
-                    gasPrice: web3.utils.toHex(gasPrice),
-                    nonce: web3.utils.toHex(nonce),
-                    chainId: chainId,
-                    value: web3.utils.toHex(web3.utils.toWei('0', 'ether')),
-                    to: pancakeRouterAddress
-                };
+        let data = pancakeRouterContract.methods.swapExactTokensForETH(
+            pricesFromLittleCake[0], 
+            (Math.floor(parseInt(pricesFromLittleCake[1])*0.99)).toString(), 
+            [cakeAddress, bnbAddress], 
+            senderAddress,
+            Date.now() + 1000 * 60 * 10
+            );
 
-                function executeTransaction(executed) {
-                    // console.log(2);
+        let count = await web3.eth.getTransactionCount(senderAddress);
 
-                    // let gasForSwap = await pancakeRouterContract.methods.swapExactTokensForETH(
-                    //     pricesOfHalfOfCakeBalance[0],
-                    //     pricesOfHalfOfCakeBalance[1],
-                    //     [cakeAddress, bnbAddress],
-                    //     senderAddress,
-                    //     Date.now() + 1000 * 60 * 10
-                    //     ).estimateGas({ from: senderAddress });
+        var rawTransaction = {
+            nonce: web3.utils.toHex(count),
+            gasPrice: web3.utils.toHex(gasPrice),
+            gasLimit: web3.utils.toHex(gasLimit),
+            to: pancakeRouterAddress,
+            value: web3.utils.toHex('0'),
+            data: data.encodeABI(),
+            chainId: chainId,
+            from: senderAddress
+        };  
 
-                    pancakeRouterContract.methods.swapExactTokensForETH(
-                        web3.utils.toWei('0.02', 'ether'), 
-                        web3.utils.toWei('0.0003', 'ether'), 
-                        [cakeAddress, bnbAddress], 
-                        senderAddress,
-                        Date.now() + 1000 * 60 * 10
-                        ).call({ from: senderAddress }, function(gasEstimateError, gasAmount){
-                        if (!gasEstimateError) {
-                            // console.log(3);
-                            txParams.data = pancakeRouterContract.methods.swapExactTokensForETH(
-                                web3.utils.toWei('0.02', 'ether'), 
-                                web3.utils.toWei('0.0003', 'ether'), 
-                                [cakeAddress, bnbAddress], 
-                                senderAddress,
-                                Date.now() + 1000 * 60 * 10
-                                ).encodeABI();
-                            // console.log(4);
-                            web3.eth.accounts.signTransaction(txParams, process.env.SENDER_PRIVATE_KEY, function(signTransactionErr, signedTx) {
-                                // console.log(5);
-                                if (!signTransactionErr) {
-                                    nonce += 1;
-                                    txParams.nonce = web3.utils.toHex(nonce);
-                                    // console.log(txParams);
-                                    // console.log(6);
-                                    // console.log(signedTx);
-                                    web3.eth.sendSignedTransaction(signedTx.rawTransaction, function(sendSignedTransactionErr, transactionHash) {
-                                        if (!sendSignedTransactionErr) {
-                                            executed += 1;
-                                            // console.log(transactionHash);
-                                            console.log("Successfully Swap Half of CAKE into BNB!");
-                                            return;
-                                        } else {
-                                            console.log(sendSignedTransactionErr);
-                                            return;
-                                        }
-                                        
-                                    })
-                                } else {
-                                    console.log(signTransactionErr);
-                                    return;
-                                }
-                            })
-                        } else {
-                            console.log(gasEstimateError);
-                            return;
-                        }
-                    })
-                }
-                executeTransaction(executed);
-                return;
-            } else {
-                console.log(nonceErr);
-                return;
-            }
+        let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
+        transaction.sign(privateKey);
 
-        } );
+        var result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
+        result.status === true ? console.log("Successfully Swap Half of CAKE into BNB!") : console.log("Fail to Swap Half of CAKE into BNB");
+        return result;
     }
 
     let addLiquidityV2 = async() => {
@@ -356,7 +303,7 @@ const main = async () => {
         transaction.sign(privateKey);
 
         var result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
-        console.log(result)
+        result.status === true ? console.log("Succussfully Add Liquidity to CAKE-BNB!") : console.log("Fail to Add Liquidity to CAKE-BNB");
         return result;    
     
     }
@@ -387,7 +334,7 @@ const main = async () => {
         transaction.sign(privateKey);
 
         let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
-        result.status === true ? console.log("Succussfully Re-investing CAKE-BNB LP into the farm!") : console.log("Fail to re-investing CAKE-BNB LP")
+        result.status === true ? console.log("Succussfully Re-investing CAKE-BNB LP into the farm!") : console.log("Fail to re-investing CAKE-BNB LP");
         return result;
         
     }
@@ -397,19 +344,19 @@ const main = async () => {
 
     balances().then(() => {
         estimateTotalCostOfGasFees().then(() => {
-            // comparePendingCakeAndEstimatedGasFees().then(r => {
-            //     if (!r) {
-            //         harvestCake().then(() => {
-            //             swapHalfOfCake().then(()=> {
+            comparePendingCakeAndEstimatedGasFees().then(r => {
+                if (!r) {
+                    harvestCake().then(() => {
+                        swapHalfOfCake().then(()=> {
                             addLiquidityV2().then(() => {
                                 reinvestingCakeBnbLP();
                             })
-            //             })
-            //         })
-            //     } else {
-            //         return
-            //     }
-            // })
+                        })
+                    })
+                } else {
+                    return
+                }
+            })
         })
     })
 
