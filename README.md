@@ -27,8 +27,8 @@ https://www.dropbox.com/s/c8dnibavhe7i8xs/Auto-Compounder%28Ver%201%29.mov?dl=0
 This auto-compounder show the balances of: 
 - **CAKE** (Wallet)
 - **BNB** (Wallet)
-- **CAKE-BNB LP Tokens** (Wallets)
-- **Pending Rewards of CAKE** (from the Farm)
+- **CAKE-BNB LP Tokens** (Wallet)
+- **Pending Rewards of CAKE** (from the CAKE-BNB Farm)
 
 It also estimate all the gas fees needed for the transactions for each auto-compounding and sum it up:
 - Harvesting CAKE
