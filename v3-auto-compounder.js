@@ -87,8 +87,6 @@ const main = async () => {
     let gasLimit = 500000;
     let chainId = 56;
 
-
-
     let balances = async() => {
         console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         console.log('\x1b[96m%s\x1b[0m', "                                        BALANCES\n");
@@ -178,10 +176,9 @@ const main = async () => {
     }
 
     let harvestCake = async() => {
-        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         console.log('\x1b[96m%s\x1b[0m', "                           START TO AUTO-COMPOUND\n");
         let count = await web3.eth.getTransactionCount(senderAddress);
-        // console.log(`harvest - nonce: ${count}`);
 
         cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
 
@@ -211,10 +208,8 @@ const main = async () => {
 
     let swapHalfOfCake = async() => {
         let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((parseInt(cakeBalance) / 2).toString());
-        // let pricesFromLittleCake = await calcPricesBetweenCakeAndBnb(web3.utils.toWei('0.001', 'ether'));
 
         let count = await web3.eth.getTransactionCount(senderAddress);
-        // console.log(`swap - nonce: ${count}`);
 
         let data = pancakeRouterContract.methods.swapExactTokensForETH(
             pricesOfHalfOfCakeBalance[0], 
@@ -244,13 +239,10 @@ const main = async () => {
     }
 
     let addLiquidityV2 = async() => {
-        let cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
         let cakeBalance = await cakeContract.methods.balanceOf(senderAddress).call();
 
-        let bnb = 0.0001;
         let pricesOfCakeAndBnb = await calcPricesBetweenCakeAndBnb(cakeBalance);
         let count = await web3.eth.getTransactionCount(senderAddress);
-        // console.log(`addliquidity - nonce: ${count}`);
 
         let data = pancakeRouterContract.methods.addLiquidityETH(
             cakeAddress,
@@ -284,21 +276,17 @@ const main = async () => {
 
     let reinvestingCakeBnbLP = async() => {
         cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
-        // console.log(`Wallet - CAKE-BNB LP Balance: ${web3.utils.fromWei(cakeBnbBalance, "ether")}`);
 
         if (parseInt(cakeBnbBalance) === 0) {
             console.log('\x1b[91m\x1b[51m%s\x1b[0m', "Liquidity is ZERO, Auto-Compouding is STOPPING NOW\n")
             return;
         } else {
             let count = await web3.eth.getTransactionCount(senderAddress);
-            // console.log(`reinvest - nonce: ${count}`);
 
             let data = masterChefContract.methods.deposit(
                 cakeBnbPid,
                 cakeBnbBalance
                 );
-
-            // let count = await web3.eth.getTransactionCount(senderAddress);
 
             var rawTransaction = {
                 nonce: web3.utils.toHex(count),
@@ -321,56 +309,6 @@ const main = async () => {
         
     }
 
-    // balances().then(() => {
-    //     estimateTotalCostOfGasFees().then(() => {
-    //         comparePendingCakeAndEstimatedGasFees().then(r => {
-    //             if (!r) {
-    //                 harvestCake().then(() => {
-    //                     swapHalfOfCake().then(()=> {
-    //                         addLiquidityV2().then(() => {
-    //                             reinvestingCakeBnbLP();
-    //                         })
-    //                     })
-    //                 })
-    //             } else {
-    //                 return
-    //             }
-    //         })
-    //     })
-    // });
-
-
-    // setInterval(()=> {
-    //     balances().then(() => {
-    //         estimateTotalCostOfGasFees().then(() => {
-    //             comparePendingCakeAndEstimatedGasFees().then(r => {
-    //                 if (!r) {
-    //                     console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-    //                     console.log("Waiting for next Auto-Compounding...\n");
-    //                     return;
-    //                 } else {
-    //                     harvestCake().then(() => {
-    //                         swapHalfOfCake().then(()=> {
-    //                             addLiquidityV2().then(r => {
-    //                                 if (!r) {
-    //                                     console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-    //                                     console.log("Waiting for next Auto-Compounding...\n");
-    //                                     return;
-    //                                 } else {
-    //                                     reinvestingCakeBnbLP().finally(()=>{
-    //                                         console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-    //                                         console.log("Waiting for next Auto-Compounding...\n");
-    //                                         return;
-    //                                     })
-    //                                 }
-    //                             })
-    //                         })
-    //                     })
-    //                 }
-    //             })
-    //         })
-    //     })
-    // }, 15000);
     console.log("Waiting for next Pair Created...\n");
 
     pancakeFactory.on('PairCreated', async (token0, token1, pairAddress) => {
