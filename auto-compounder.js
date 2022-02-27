@@ -326,106 +326,106 @@ const main = async () => {
         } );
     }
 
-    let addLiquidity = async() => {
-        let bnb = 0.01;
-        let pricesOfCakeAndBnb = await calcPricesBetweenCakeAndBnb(web3.utils.toWei((bnb*57.2095).toString(),'ether'));
-        // console.log(`pricesOfCakeAndBnb[0]: ${pricesOfCakeAndBnb[0]} CAKE`);
-        // console.log(`pricesOfCakeAndBnb[1]: ${pricesOfCakeAndBnb[1]} BNB`);
-        console.log(`pricesOfCakeAndBnb[0]: ${pricesOfCakeAndBnb[0]}`);
-        console.log(`Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(): ${Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString()}`);
-        console.log(`Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(): ${Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString()}`)
-        web3.eth.getTransactionCount(senderAddress, 'pending', function(nonceErr, nonceResponse) {
-            if (!nonceErr) {
-                console.log(nonceResponse);
-                console.log(1);
-                var nonce = nonceResponse+1;
-                var txParams = {
-                    nonce: web3.utils.toHex(nonce),
-                    gasPrice: web3.utils.toHex(gasPrice),
-                    gas: web3.utils.toHex(gasLimit),
-                    to: cakeBnbAddress,
-                    value: web3.utils.toHex(pricesOfCakeAndBnb[1]),
-                    chainId: chainId,
-                    from: senderAddress
-                };  
+    // let addLiquidity = async() => {
+    //     let bnb = 0.01;
+    //     let pricesOfCakeAndBnb = await calcPricesBetweenCakeAndBnb(web3.utils.toWei((bnb*57.2095).toString(),'ether'));
+    //     // console.log(`pricesOfCakeAndBnb[0]: ${pricesOfCakeAndBnb[0]} CAKE`);
+    //     // console.log(`pricesOfCakeAndBnb[1]: ${pricesOfCakeAndBnb[1]} BNB`);
+    //     console.log(`pricesOfCakeAndBnb[0]: ${pricesOfCakeAndBnb[0]}`);
+    //     console.log(`Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(): ${Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString()}`);
+    //     console.log(`Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(): ${Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString()}`)
+    //     web3.eth.getTransactionCount(senderAddress, 'pending', function(nonceErr, nonceResponse) {
+    //         if (!nonceErr) {
+    //             console.log(nonceResponse);
+    //             console.log(1);
+    //             var nonce = nonceResponse+1;
+    //             var txParams = {
+    //                 nonce: web3.utils.toHex(nonce),
+    //                 gasPrice: web3.utils.toHex(gasPrice),
+    //                 gas: web3.utils.toHex(gasLimit),
+    //                 to: cakeBnbAddress,
+    //                 value: web3.utils.toHex(pricesOfCakeAndBnb[1]),
+    //                 chainId: chainId,
+    //                 from: senderAddress
+    //             };  
 
-                function executeTransaction(executed) {
-                    console.log('2b');
+    //             function executeTransaction(executed) {
+    //                 console.log('2b');
 
-                    // let gasForAddingLiquidityETH = await pancakeRouterContract.methods.addLiquidityETH(
-                    //     cakeAddress,
-                    //     pricesOfHalfOfCakeBalance[0],
-                    //     Math.floor(parseInt(pricesOfHalfOfCakeBalance[0]) * 0.94).toString(),
-                    //     Math.floor(parseInt(pricesOfHalfOfCakeBalance[1]) * 0.94).toString(),
-                    //     "0x37214aF7f44d6dAAC4C69EA1B72CAF235ee151A7",
-                    //     Date.now() + 1000 * 60 * 10
-                    //     ).estimateGas({
-                    //     from: senderAddress,
-                    //     value: pricesOfHalfOfCakeBalance[1],
-                    //     });
+    //                 // let gasForAddingLiquidityETH = await pancakeRouterContract.methods.addLiquidityETH(
+    //                 //     cakeAddress,
+    //                 //     pricesOfHalfOfCakeBalance[0],
+    //                 //     Math.floor(parseInt(pricesOfHalfOfCakeBalance[0]) * 0.94).toString(),
+    //                 //     Math.floor(parseInt(pricesOfHalfOfCakeBalance[1]) * 0.94).toString(),
+    //                 //     "0x37214aF7f44d6dAAC4C69EA1B72CAF235ee151A7",
+    //                 //     Date.now() + 1000 * 60 * 10
+    //                 //     ).estimateGas({
+    //                 //     from: senderAddress,
+    //                 //     value: pricesOfHalfOfCakeBalance[1],
+    //                 //     });
 
 
 
-                    pancakeRouterContract.methods.addLiquidityETH(
-                        cakeAddress,
-                        pricesOfCakeAndBnb[0],
-                        Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(),
-                        Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(),
-                        senderAddress,
-                        Date.now() + 1000 * 60 * 10
-                        ).call({ from: masterChefAddress }, function(gasEstimateError, gasAmount){
-                        if (!gasEstimateError) {
-                            console.log(3);
-                            txParams.data = pancakeRouterContract.methods.addLiquidityETH(
-                                cakeAddress,
-                                pricesOfCakeAndBnb[0],
-                                Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(),
-                                Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(),
-                                senderAddress,
-                                Date.now() + 1000 * 60 * 10
-                                ).encodeABI();
-                            console.log(4);
-                            web3.eth.accounts.signTransaction(txParams, process.env.SENDER_PRIVATE_KEY, function(signTransactionErr, signedTx) {
-                                console.log(5);
-                                if (!signTransactionErr) {
-                                    nonce += 1;
-                                    txParams.nonce = web3.utils.toHex(nonce);
-                                    console.log(txParams);
-                                    console.log(6);
-                                    console.log(signedTx);
-                                    web3.eth.sendSignedTransaction(signedTx.rawTransaction, function(sendSignedTransactionErr, transactionHash) {
-                                        console.log(7);
-                                        if (!sendSignedTransactionErr) {
-                                            executed += 1;
-                                            console.log(transactionHash);
-                                            console.log("Successfully Add Liquididty into CAKE-BNB!");
-                                            return;
-                                        } else {
-                                            console.log(sendSignedTransactionErr);
-                                            return;
-                                        }
+    //                 pancakeRouterContract.methods.addLiquidityETH(
+    //                     cakeAddress,
+    //                     pricesOfCakeAndBnb[0],
+    //                     Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(),
+    //                     Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(),
+    //                     senderAddress,
+    //                     Date.now() + 1000 * 60 * 10
+    //                     ).call({ from: masterChefAddress }, function(gasEstimateError, gasAmount){
+    //                     if (!gasEstimateError) {
+    //                         console.log(3);
+    //                         txParams.data = pancakeRouterContract.methods.addLiquidityETH(
+    //                             cakeAddress,
+    //                             pricesOfCakeAndBnb[0],
+    //                             Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(),
+    //                             Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(),
+    //                             senderAddress,
+    //                             Date.now() + 1000 * 60 * 10
+    //                             ).encodeABI();
+    //                         console.log(4);
+    //                         web3.eth.accounts.signTransaction(txParams, process.env.SENDER_PRIVATE_KEY, function(signTransactionErr, signedTx) {
+    //                             console.log(5);
+    //                             if (!signTransactionErr) {
+    //                                 nonce += 1;
+    //                                 txParams.nonce = web3.utils.toHex(nonce);
+    //                                 console.log(txParams);
+    //                                 console.log(6);
+    //                                 console.log(signedTx);
+    //                                 web3.eth.sendSignedTransaction(signedTx.rawTransaction, function(sendSignedTransactionErr, transactionHash) {
+    //                                     console.log(7);
+    //                                     if (!sendSignedTransactionErr) {
+    //                                         executed += 1;
+    //                                         console.log(transactionHash);
+    //                                         console.log("Successfully Add Liquididty into CAKE-BNB!");
+    //                                         return;
+    //                                     } else {
+    //                                         console.log(sendSignedTransactionErr);
+    //                                         return;
+    //                                     }
                                         
-                                    })
-                                } else {
-                                    console.log(signTransactionErr);
-                                    return;
-                                }
-                            })
-                        } else {
-                            console.log(gasEstimateError);
-                            return;
-                        }
-                    })
-                }
-                executeTransaction(executed);
-                return;
-            } else {
-                console.log(nonceErr);
-                return;
-            }
+    //                                 })
+    //                             } else {
+    //                                 console.log(signTransactionErr);
+    //                                 return;
+    //                             }
+    //                         })
+    //                     } else {
+    //                         console.log(gasEstimateError);
+    //                         return;
+    //                     }
+    //                 })
+    //             }
+    //             executeTransaction(executed);
+    //             return;
+    //         } else {
+    //             console.log(nonceErr);
+    //             return;
+    //         }
 
-        } );
-    }
+    //     } );
+    // }
 
     let addLiquidityV2 = async() => {
         let bnb = 0.01;
