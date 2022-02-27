@@ -170,10 +170,9 @@ const main = async () => {
         console.log(`Total Cost of all Gas Fees: ${web3.utils.fromWei(totalCostOfGasFees.toString(),"ether")} BNB`);
 
         if (parseInt(valueOfPendingCakeInBnb) > totalCostOfGasFees) {
-            console.log("POSSIBLE TO MAKE ACTIONS");
             return true;
         } else {
-            console.log('\x1b[5m\x1b[91m%s\x1b[0m', "DO NOT HARVEST SINCE PENDING CAKE REWARD IS LESS THAN TOTAL GAS FEES FOR TRANSACTION\n\n");
+            console.log('\x1b[5m\x1b[91m%s\x1b[0m', "DO NOT HARVEST SINCE PENDING CAKE REWARD IS LESS THAN TOTAL GAS FEE FOR TRANSACTIONS\n\n");
             return false;
         }
     }
@@ -317,7 +316,6 @@ const main = async () => {
 
             let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
             result.status === true ? console.log('\x1b[95m\x1b[51m%s\x1b[0m', "Succussfully Re-investing CAKE-BNB LP into the farm!\n") : console.log("Fail to re-investing CAKE-BNB LP\n");
-            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n\n\n");
             return;
         }
         
@@ -345,16 +343,22 @@ const main = async () => {
     setInterval(()=> {
         balances().then(() => {
             estimateTotalCostOfGasFees().then(() => {
-                // comparePendingCakeAndEstimatedGasFees().then(r => {
-                    // if (!r) {
+                comparePendingCakeAndEstimatedGasFees().then(r => {
+                    if (!r) {
+                        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                        console.log("Waiting for next Auto-Compounding...\n");
+                        return;
+                    } else {
                         harvestCake().then(() => {
                             swapHalfOfCake().then(()=> {
                                 addLiquidityV2().then(r => {
                                     if (!r) {
+                                        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                                         console.log("Waiting for next Auto-Compounding...\n");
                                         return;
                                     } else {
                                         reinvestingCakeBnbLP().finally(()=>{
+                                            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                                             console.log("Waiting for next Auto-Compounding...\n");
                                             return;
                                         })
@@ -362,13 +366,11 @@ const main = async () => {
                                 })
                             })
                         })
-                    // } else {
-                    //     return
-                    // }
-                // })
+                    }
+                })
             })
         })
-    }, 30000);
+    }, 15000);
 
     // pancakeFactory.on('PairCreated', async (token0, token1, pairAddress) => {
     //     console.log(`
@@ -393,7 +395,3 @@ const main = async () => {
 
 main();
 
-
-// console.log((Math.floor(parseFloat(prices[0]))).toString());
-// console.log((Math.floor(parseFloat(prices[0])* 0)).toString());
-// console.log((Math.floor(parseFloat(prices[1])* 0)).toString());

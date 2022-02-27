@@ -35,8 +35,8 @@ It also estimate all the gas fees needed for the transactions for each auto-comp
 - Adding liquidity of CAKE-BNB by pairing CAKE & BNB
 - Re-investing all CAKE-BNB LP Tokens into the farm 
 
-It would continuously to auto-compound. 
-In case there is no liquidity of CAKE-BNB, it would stop re-investing for this particular time.
-But it would still be triggered to start auto-compound again by next time interval.
-
+1. It would continuously to auto-compound. 
+2. In case there is no liquidity of CAKE-BNB, it would stop re-investing for this particular time.
+3. But it would still be triggered to start auto-compound again by next time interval.
+4. For this version 1 auto-compounder, can simply increase the time-interval to trigger to avoid spending too much gas fees by getting too less CAKE reward by harvesting.
 ---
