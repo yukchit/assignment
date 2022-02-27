@@ -172,7 +172,7 @@ const main = async () => {
         if (parseInt(valueOfPendingCakeInBnb) > totalCostOfGasFees) {
             return true;
         } else {
-            console.log('\x1b[5m\x1b[91m%s\x1b[0m', "DO NOT HARVEST SINCE PENDING CAKE REWARD IS LESS THAN TOTAL GAS FEE FOR TRANSACTIONS\n\n");
+            console.log('\x1b[5m\x1b[91m%s\x1b[0m', "DO NOT HARVEST SINCE PENDING CAKE REWARD IS LESS THAN TOTAL GAS FEE FOR TRANSACTIONS\n");
             return false;
         }
     }
@@ -340,57 +340,81 @@ const main = async () => {
     // });
 
 
-    setInterval(()=> {
-        balances().then(() => {
-            estimateTotalCostOfGasFees().then(() => {
-                comparePendingCakeAndEstimatedGasFees().then(r => {
-                    if (!r) {
-                        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                        console.log("Waiting for next Auto-Compounding...\n");
-                        return;
-                    } else {
-                        harvestCake().then(() => {
-                            swapHalfOfCake().then(()=> {
-                                addLiquidityV2().then(r => {
-                                    if (!r) {
-                                        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                                        console.log("Waiting for next Auto-Compounding...\n");
-                                        return;
-                                    } else {
-                                        reinvestingCakeBnbLP().finally(()=>{
-                                            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                                            console.log("Waiting for next Auto-Compounding...\n");
-                                            return;
-                                        })
-                                    }
-                                })
-                            })
-                        })
-                    }
-                })
-            })
-        })
-    }, 15000);
-
-    // pancakeFactory.on('PairCreated', async (token0, token1, pairAddress) => {
-    //     console.log(`
-    //         New pair detected
-    //         =================
-    //         token0: ${token0}
-    //         token1: ${token1}
-    //         pairAddress: ${pairAddress}
-    //         `);
-    //     if (token0 === bnbAddress || token1 === bnbAddress) {
-    //         balances().then(() => {
-    //             estimateTotalCostOfGasFees().then(() => {
-    //                 comparePendingCakeAndEstimatedGasFees()
+    // setInterval(()=> {
+    //     balances().then(() => {
+    //         estimateTotalCostOfGasFees().then(() => {
+    //             comparePendingCakeAndEstimatedGasFees().then(r => {
+    //                 if (!r) {
+    //                     console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+    //                     console.log("Waiting for next Auto-Compounding...\n");
+    //                     return;
+    //                 } else {
+    //                     harvestCake().then(() => {
+    //                         swapHalfOfCake().then(()=> {
+    //                             addLiquidityV2().then(r => {
+    //                                 if (!r) {
+    //                                     console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+    //                                     console.log("Waiting for next Auto-Compounding...\n");
+    //                                     return;
+    //                                 } else {
+    //                                     reinvestingCakeBnbLP().finally(()=>{
+    //                                         console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+    //                                         console.log("Waiting for next Auto-Compounding...\n");
+    //                                         return;
+    //                                     })
+    //                                 }
+    //                             })
+    //                         })
+    //                     })
+    //                 }
     //             })
     //         })
-    //     } else {
-    //         console.log("This pair does not have BNB");
-    //     }
-    // });
-    
+    //     })
+    // }, 15000);
+    console.log("Waiting for next Pair Created...\n");
+
+    pancakeFactory.on('PairCreated', async (token0, token1, pairAddress) => {
+        console.log(`
+            New pair detected
+            =================
+            token0: ${token0}
+            token1: ${token1}
+            pairAddress: ${pairAddress}
+            `);
+        if (token0 === bnbAddress || token1 === bnbAddress) {
+            balances().then(() => {
+                estimateTotalCostOfGasFees().then(() => {
+                    comparePendingCakeAndEstimatedGasFees().then(r => {
+                        if (!r) {
+                            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                            console.log("Waiting for next Pair Created...\n");
+                            return;
+                        } else {
+                            harvestCake().then(() => {
+                                swapHalfOfCake().then(()=> {
+                                    addLiquidityV2().then(r => {
+                                        if (!r) {
+                                            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                                            console.log("Waiting for next Pair Created...\n");
+                                            return;
+                                        } else {
+                                            reinvestingCakeBnbLP().finally(()=>{
+                                                console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                                                console.log("Waiting for next Pair Created...\n");
+                                                return;
+                                            })
+                                        }
+                                    })
+                                })
+                            })
+                        }
+                    })
+                })
+            })
+        } else {
+            console.log("This pair does not have BNB");
+        }
+    });
 };
 
 main();
