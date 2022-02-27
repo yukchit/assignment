@@ -51,6 +51,20 @@ https://www.dropbox.com/s/d67ehlm86x7g2yt/Auto-Compounder%28Ver%202%29.mov?dl=0
 
 The advanced features of this Auto-Compounder(Ver.2):
 - It compares the value of the **pending CAKE reward** & **total estimated gas fee** that needed for one time of auto-compounding
-- When the value of **pending CAKE reward** is less than the value of **total estimated gas fee**, it would stop harvesting and wait for next time interval to start again.
+- When the value of **pending CAKE reward** is less than the value of **total estimated gas fee**, it would **STOP** harvesting and wait for next time interval to start again.
+
+---
+## Start the Auto-Compounder (Ver. 3)
+
+Run `node v3-auto-compounder.js`
+
+
+### Video Demonstration
+https://www.dropbox.com/s/c1eq0afoy2f2y68/Auto-Compounder%28Ver%203%29.mov?dl=0
+
+The advanced features of this Auto-Compounder(Ver.3):
+- This Auto-Compounder(Ver.3) is connected to **web socket**.
+- By using web socket, its listener would waiting for the signal that emitted from a **new created pair**.
+- Once a new pair is created, it would trigger this Auto-Compounder(Ver.3).
 
 ---
