@@ -43,7 +43,7 @@ It also estimate all the gas fees needed for the transactions for each auto-comp
 ---
 ## Start the Auto-Compounder (Ver 2)
 
-Run `node auto-compounder.js`
+Run `node v2-auto-compounder.js`
 
 
 ### Video Demonstration
