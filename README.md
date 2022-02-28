@@ -69,3 +69,13 @@ The advanced features of this Auto-Compounder(Ver.3):
 - Once a new pair is created, it would trigger this Auto-Compounder(Ver.3).
 
 ---
+## Reward Calculator    
+
+Run `node reward-calculater.js`
+
+### Description
+
+- This Reward Calculator assumes the yield farming is auto-compounding once a day.
+- It assumes the initial investment is $1000.
+- It calculate the rewards of both normal staking investment and yield farming with auto-compounding once a day.
+
