@@ -77,5 +77,5 @@ Run `node reward-calculater.js`
 
 - This Reward Calculator assumes the yield farming is auto-compounding once a day.
 - It assumes the initial investment is $1000.
-- It calculate the rewards of both normal staking investment and yield farming with auto-compounding once a day.
-
+- It calculates the rewards of both normal staking investment and yield farming with auto-compounding once a day.
+- It would exit if user enter non-number or number that is smaller than 1.
