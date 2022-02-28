@@ -79,3 +79,5 @@ Run `node reward-calculater.js`
 - It assumes the initial investment is $1000.
 - It calculates the rewards of both normal staking investment and yield farming with auto-compounding once a day.
 - It would exit if user enter non-number or number that is smaller than 1.
+
+---
