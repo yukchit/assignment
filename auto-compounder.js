@@ -210,7 +210,7 @@ const main = async () => {
     }
 
     let swapHalfOfCake = async() => {
-        let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((parseInt(cakeBalance) / 2).toString());
+        let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((Math.floor(parseInt(cakeBalance) / 2)).toString());
 
         let count = await web3.eth.getTransactionCount(senderAddress);
 
