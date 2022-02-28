@@ -31,9 +31,10 @@ const question2 = () => {
                     let rewardWithoutYieldFarming = 1000 * 0.329 / 365 * dayNumber;
                     let rewardWithYieldFarming = 1000 * (Math.pow((1 + (0.329 / 365)), dayNumber) - 1)
 
-                    console.log('\x1b[5m\x1b[94m\x1b[1m%s\x1b[0m', `For ${dayNumber} Day(s) after initial investment: \n`);
-                    console.log('\x1b[91m%s\x1b[0m', `Reward without Yield Farming - $${rewardWithoutYieldFarming}`);
-                    console.log('\x1b[92m%s\x1b[0m', `Reward with Yield Farming - $${rewardWithYieldFarming}\n`);
+                    console.log('\x1b[5m\x1b[93m\x1b[1m%s\x1b[0m', `For ${dayNumber} Day(s) after initial investment: \n`);
+                    console.log('\x1b[91m%s\x1b[0m', `Reward of Normal Staking - $${rewardWithoutYieldFarming}`);
+                    console.log('\x1b[92m%s\x1b[0m', `Reward of Yield Farming with Auto-Compounding - $${rewardWithYieldFarming}\n`);
+                    console.log('\x1b[96m%s\x1b[0m', `Extra Reward by Auto-Compounding $${rewardWithYieldFarming - rewardWithoutYieldFarming}\n`);
                 }
                 comparison(day);
 
