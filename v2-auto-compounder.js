@@ -72,15 +72,25 @@ const main = async () => {
     // });
 
     let calcPricesBetweenCakeAndBnb = async (amountOfCake) => {
-      let prices = await pancakeRouterContract.methods.getAmountsOut(amountOfCake, [cakeAddress, bnbAddress]).call();
-    //   console.log(`${web3.utils.fromWei(prices[0], "ether")} CAKE : ${web3.utils.fromWei(prices[1],"ether")} BNB\n`);
-      return prices;
+        try {
+            let prices = await pancakeRouterContract.methods.getAmountsOut(amountOfCake, [cakeAddress, bnbAddress]).call();
+            //   console.log(`${web3.utils.fromWei(prices[0], "ether")} CAKE : ${web3.utils.fromWei(prices[1],"ether")} BNB\n`);
+              return prices;
+
+        } catch(e) {
+            console.error(e);
+        }
     };
 
     let calcPricesBetweenBnbAndUsdt = async (amountOfBnb) => {
-        let prices = await pancakeRouterContract.methods.getAmountsOut(amountOfBnb, [bnbAddress, busdAddress]).call();
-        // console.log(`${web3.utils.fromWei(prices[0], "ether")} BNB : ${web3.utils.fromWei(prices[1],"ether")} BUSD\n`);
-        return prices;
+        try {
+            let prices = await pancakeRouterContract.methods.getAmountsOut(amountOfBnb, [bnbAddress, busdAddress]).call();
+            // console.log(`${web3.utils.fromWei(prices[0], "ether")} BNB : ${web3.utils.fromWei(prices[1],"ether")} BUSD\n`);
+            return prices;
+
+        } catch(e) {
+            console.error(e);
+        }
     };
     
     let cakeBalance, cakeBnbBalance, totalCostOfGasFees, gasPrice;
@@ -90,204 +100,120 @@ const main = async () => {
 
 
     let balances = async() => {
-        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-        console.log('\x1b[96m%s\x1b[0m', "                                        BALANCES\n");
-
-        cakeBalance = await cakeContract.methods.balanceOf(senderAddress).call();
-        console.log(`Wallet - CAKE Balance: ${web3.utils.fromWei(cakeBalance, "ether")}`);
+        try {
+            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+            console.log('\x1b[96m%s\x1b[0m', "                                        BALANCES\n");
     
-        let bnbBalance = await web3.eth.getBalance(senderAddress);
-        console.log(`Wallet - BNB Balance: ${web3.utils.fromWei(bnbBalance, "ether")}`);
-    
-        cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
-        console.log(`Wallet - CAKE-BNB LP Balance: ${web3.utils.fromWei(cakeBnbBalance,"ether")}`);
-    
-        let pendingCake = await masterChefContract.methods.pendingCake(cakeBnbPid, senderAddress).call();
-        console.log(`Farm - Pending CAKE from CAKE-BNB LP Farm: ${web3.utils.fromWei(pendingCake,"ether")}\n`);
-    
+            cakeBalance = await cakeContract.methods.balanceOf(senderAddress).call();
+            console.log(`Wallet - CAKE Balance: ${web3.utils.fromWei(cakeBalance, "ether")}`);
+        
+            let bnbBalance = await web3.eth.getBalance(senderAddress);
+            console.log(`Wallet - BNB Balance: ${web3.utils.fromWei(bnbBalance, "ether")}`);
+        
+            cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
+            console.log(`Wallet - CAKE-BNB LP Balance: ${web3.utils.fromWei(cakeBnbBalance,"ether")}`);
+        
+            let pendingCake = await masterChefContract.methods.pendingCake(cakeBnbPid, senderAddress).call();
+            console.log(`Farm - Pending CAKE from CAKE-BNB LP Farm: ${web3.utils.fromWei(pendingCake,"ether")}\n`);
+        
+        } catch(e) {
+            console.error(e);
+        }  
     }
 
     let estimateTotalCostOfGasFees = async () => {
-        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-        console.log('\x1b[96m%s\x1b[0m', "                                   ESTIMATED GAS FEES\n");
-
-        gasPrice = await web3.eth.getGasPrice();
-        console.log(`Gas Price: ${gasPrice} wei\n`);
-
-        let gasForHarvest = await masterChefContract.methods.deposit(cakeBnbPid, 0).estimateGas({ from: senderAddress });
-        console.log(`Gas for Harvesting CAKE: ${gasForHarvest} units`);
-        let gasCostForHarvestingCake = gasForHarvest * gasPrice;
-        console.log(`Gas Cost for Harvesting CAKE: ${web3.utils.fromWei(gasCostForHarvestingCake.toString(),"ether")} BNB\n`);
-
-        let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((Math.floor(parseInt(cakeBalance) / 2)).toString());
-
-        let gasForSwap = await pancakeRouterContract.methods.swapExactTokensForETH(
-            pricesOfHalfOfCakeBalance[0],
-            pricesOfHalfOfCakeBalance[1],
-            [cakeAddress, bnbAddress],
-            senderAddress,
-            Date.now() + 1000 * 60 * 10
-            ).estimateGas({ from: senderAddress });
-        console.log(`Gas for Swap: ${gasForSwap} units`);
-        let gasCostForSwap = gasForSwap * gasPrice;
-        console.log(`Gas Cost for Swap (transaction): ${web3.utils.fromWei(gasCostForSwap.toString(),"ether")} BNB\n`);
-
-        let gasForAddingLiquidityETH = await pancakeRouterContract.methods.addLiquidityETH(
-            cakeAddress,
-            pricesOfHalfOfCakeBalance[0],
-            Math.floor(parseInt(pricesOfHalfOfCakeBalance[0]) * 0.94).toString(),
-            Math.floor(parseInt(pricesOfHalfOfCakeBalance[1]) * 0.94).toString(),
-            "0x37214aF7f44d6dAAC4C69EA1B72CAF235ee151A7",
-            Date.now() + 1000 * 60 * 10
-            ).estimateGas({
-            from: senderAddress,
-            value: pricesOfHalfOfCakeBalance[1],
-            });
-        console.log(`Gas for Adding Liquidity: ${gasForAddingLiquidityETH} units`);
-        let gasCostForAddingLiquidity = gasForAddingLiquidityETH * gasPrice;
-        console.log(`Gas Cost for Adding Liquidity: ${web3.utils.fromWei(gasCostForAddingLiquidity.toString(),"ether")} BNB\n`);
-
-        cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
-        let gasForReinvestingCakeBnbLP = await masterChefContract.methods.deposit(cakeBnbPid, cakeBnbBalance).estimateGas({ from: senderAddress });
-        console.log(`Gas for Reinvesting CAKE-BNB LP: ${gasForReinvestingCakeBnbLP} units`);
-        let gasCostForReinvestingLP = gasForReinvestingCakeBnbLP * gasPrice;
-        console.log(`Gas Cost for Reinvesting CAKE-BNB LP: ${web3.utils.fromWei(gasCostForReinvestingLP.toString(),"ether")} BNB\n`
-        );
-
-        totalCostOfGasFees = gasCostForHarvestingCake + gasCostForSwap + gasCostForAddingLiquidity + gasCostForReinvestingLP;
-        let pricesOfTotalCostOfGasFees = await calcPricesBetweenBnbAndUsdt(totalCostOfGasFees.toString());
-        let totalCostOfGasFeesInBusd = pricesOfTotalCostOfGasFees[1];
-        console.log('\x1b[35m%s\x1b[0m', `TOTAL COST OF ALL ESTIMATED GAS FEES: ${web3.utils.fromWei(totalCostOfGasFees.toString(),"ether")} BNB (~${web3.utils.fromWei(totalCostOfGasFeesInBusd, "ether")} BUSD)\n`);
+        try {
+            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+            console.log('\x1b[96m%s\x1b[0m', "                                   ESTIMATED GAS FEES\n");
+    
+            gasPrice = await web3.eth.getGasPrice();
+            console.log(`Gas Price: ${gasPrice} wei\n`);
+    
+            let gasForHarvest = await masterChefContract.methods.deposit(cakeBnbPid, 0).estimateGas({ from: senderAddress });
+            console.log(`Gas for Harvesting CAKE: ${gasForHarvest} units`);
+            let gasCostForHarvestingCake = gasForHarvest * gasPrice;
+            console.log(`Gas Cost for Harvesting CAKE: ${web3.utils.fromWei(gasCostForHarvestingCake.toString(),"ether")} BNB\n`);
+    
+            let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((Math.floor(parseInt(cakeBalance) / 2)).toString());
+    
+            let gasForSwap = await pancakeRouterContract.methods.swapExactTokensForETH(
+                pricesOfHalfOfCakeBalance[0],
+                pricesOfHalfOfCakeBalance[1],
+                [cakeAddress, bnbAddress],
+                senderAddress,
+                Date.now() + 1000 * 60 * 10
+                ).estimateGas({ from: senderAddress });
+            console.log(`Gas for Swap: ${gasForSwap} units`);
+            let gasCostForSwap = gasForSwap * gasPrice;
+            console.log(`Gas Cost for Swap (transaction): ${web3.utils.fromWei(gasCostForSwap.toString(),"ether")} BNB\n`);
+    
+            let gasForAddingLiquidityETH = await pancakeRouterContract.methods.addLiquidityETH(
+                cakeAddress,
+                pricesOfHalfOfCakeBalance[0],
+                Math.floor(parseInt(pricesOfHalfOfCakeBalance[0]) * 0.94).toString(),
+                Math.floor(parseInt(pricesOfHalfOfCakeBalance[1]) * 0.94).toString(),
+                "0x37214aF7f44d6dAAC4C69EA1B72CAF235ee151A7",
+                Date.now() + 1000 * 60 * 10
+                ).estimateGas({
+                from: senderAddress,
+                value: pricesOfHalfOfCakeBalance[1],
+                });
+            console.log(`Gas for Adding Liquidity: ${gasForAddingLiquidityETH} units`);
+            let gasCostForAddingLiquidity = gasForAddingLiquidityETH * gasPrice;
+            console.log(`Gas Cost for Adding Liquidity: ${web3.utils.fromWei(gasCostForAddingLiquidity.toString(),"ether")} BNB\n`);
+    
+            cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
+            let gasForReinvestingCakeBnbLP = await masterChefContract.methods.deposit(cakeBnbPid, cakeBnbBalance).estimateGas({ from: senderAddress });
+            console.log(`Gas for Reinvesting CAKE-BNB LP: ${gasForReinvestingCakeBnbLP} units`);
+            let gasCostForReinvestingLP = gasForReinvestingCakeBnbLP * gasPrice;
+            console.log(`Gas Cost for Reinvesting CAKE-BNB LP: ${web3.utils.fromWei(gasCostForReinvestingLP.toString(),"ether")} BNB\n`
+            );
+    
+            totalCostOfGasFees = gasCostForHarvestingCake + gasCostForSwap + gasCostForAddingLiquidity + gasCostForReinvestingLP;
+            let pricesOfTotalCostOfGasFees = await calcPricesBetweenBnbAndUsdt(totalCostOfGasFees.toString());
+            let totalCostOfGasFeesInBusd = pricesOfTotalCostOfGasFees[1];
+            console.log('\x1b[35m%s\x1b[0m', `TOTAL COST OF ALL ESTIMATED GAS FEES: ${web3.utils.fromWei(totalCostOfGasFees.toString(),"ether")} BNB (~${web3.utils.fromWei(totalCostOfGasFeesInBusd, "ether")} BUSD)\n`);
+        
+        } catch(e) {
+            console.error(e);
+        }
     };
 
     let comparePendingCakeAndEstimatedGasFees = async() => {
-        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-        console.log('\x1b[96m%s\x1b[0m',"                COMPARE VALUES OF PENDING CAKE & TOTAL ESTIMATED GAS FEES\n");
-        let pendingCake = await masterChefContract.methods.pendingCake(cakeBnbPid, senderAddress).call();
-        let pricesOfPendingCake = await calcPricesBetweenCakeAndBnb(pendingCake);
-        let valueOfPendingCakeInBnb = pricesOfPendingCake[1];
-        console.log(`Value of Pending CAKE in BNB: ~${web3.utils.fromWei(valueOfPendingCakeInBnb, "ether")} BNB`);
-        console.log(`Total Cost of all Gas Fees: ${web3.utils.fromWei(totalCostOfGasFees.toString(),"ether")} BNB\n`);
+        try {
+            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+            console.log('\x1b[96m%s\x1b[0m',"                COMPARE VALUES OF PENDING CAKE & TOTAL ESTIMATED GAS FEES\n");
+            let pendingCake = await masterChefContract.methods.pendingCake(cakeBnbPid, senderAddress).call();
+            let pricesOfPendingCake = await calcPricesBetweenCakeAndBnb(pendingCake);
+            let valueOfPendingCakeInBnb = pricesOfPendingCake[1];
+            console.log(`Value of Pending CAKE in BNB: ~${web3.utils.fromWei(valueOfPendingCakeInBnb, "ether")} BNB`);
+            console.log(`Total Cost of all Gas Fees: ${web3.utils.fromWei(totalCostOfGasFees.toString(),"ether")} BNB\n`);
+    
+            if (parseInt(valueOfPendingCakeInBnb) > totalCostOfGasFees) {
+                return true;
+            } else {
+                console.log('\x1b[5m\x1b[91m%s\x1b[0m', "DO NOT HARVEST SINCE PENDING CAKE REWARD IS LESS THAN TOTAL GAS FEE FOR TRANSACTIONS\n\n");
+                return false;
+            }
 
-        if (parseInt(valueOfPendingCakeInBnb) > totalCostOfGasFees) {
-            return true;
-        } else {
-            console.log('\x1b[5m\x1b[91m%s\x1b[0m', "DO NOT HARVEST SINCE PENDING CAKE REWARD IS LESS THAN TOTAL GAS FEE FOR TRANSACTIONS\n\n");
-            return false;
+        } catch(e) {
+            console.error(e);
         }
     }
 
     let harvestCake = async() => {
-        console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
-        console.log('\x1b[96m%s\x1b[0m', "                           START TO AUTO-COMPOUND\n");
-        let count = await web3.eth.getTransactionCount(senderAddress);
-
-        cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
-
-        let data = masterChefContract.methods.deposit(
-            cakeBnbPid,
-            web3.utils.toWei('0', 'ether')
-            );
-
-        var rawTransaction = {
-            nonce: web3.utils.toHex(count),
-            gasPrice: web3.utils.toHex(gasPrice),
-            gasLimit: web3.utils.toHex(gasLimit),
-            to: masterChefAddress,
-            value: web3.utils.toHex(web3.utils.toWei('0', 'ether')),
-            data: data.encodeABI(),
-            chainId: chainId,
-            from: senderAddress
-        };  
-
-        let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
-        transaction.sign(privateKey);
-
-        let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
-        result.status === true ? console.log('\x1b[92m\x1b[51m%s\x1b[0m', "Successfully Harvested!\n") : console.log("Fail to re-investing CAKE-BNB LP\n");
-        return result;
-    }
-
-    let swapHalfOfCake = async() => {
-        let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((parseInt(cakeBalance) / 2).toString());
-
-        let count = await web3.eth.getTransactionCount(senderAddress);
-
-        let data = pancakeRouterContract.methods.swapExactTokensForETH(
-            pricesOfHalfOfCakeBalance[0], 
-            (Math.floor(parseInt(pricesOfHalfOfCakeBalance[1])*0.99)).toString(), 
-            [cakeAddress, bnbAddress], 
-            senderAddress,
-            Date.now() + 1000 * 60 * 10
-            );
-        
-        var rawTransaction = {
-            nonce: web3.utils.toHex(count),
-            gasPrice: web3.utils.toHex(gasPrice),
-            gasLimit: web3.utils.toHex(gasLimit),
-            to: pancakeRouterAddress,
-            value: web3.utils.toHex('0'),
-            data: data.encodeABI(),
-            chainId: chainId,
-            from: senderAddress
-        };  
-
-        let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
-        transaction.sign(privateKey);
-
-        var result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
-        result.status === true ? console.log('\x1b[93m\x1b[51m%s\x1b[0m', "Successfully Swap Half of CAKE into BNB!\n") : console.log("Fail to Swap Half of CAKE into BNB\n");
-        return;
-    }
-
-    let addLiquidityV2 = async() => {
-        let cakeBalance = await cakeContract.methods.balanceOf(senderAddress).call();
-        let pricesOfCakeAndBnb = await calcPricesBetweenCakeAndBnb(cakeBalance);
-        let count = await web3.eth.getTransactionCount(senderAddress);
-
-        let data = pancakeRouterContract.methods.addLiquidityETH(
-            cakeAddress,
-            pricesOfCakeAndBnb[0],
-            Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(),
-            Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(),
-            senderAddress,
-            Date.now() + 1000 * 60 * 10
-            );
-
-        var rawTransaction = {
-            nonce: web3.utils.toHex(count),
-            gasPrice: web3.utils.toHex(gasPrice),
-            gasLimit: web3.utils.toHex(gasLimit),
-            to: pancakeRouterAddress,
-            value: web3.utils.toHex(pricesOfCakeAndBnb[1]),
-            data: data.encodeABI(),
-            chainId: chainId,
-            from: senderAddress
-        };  
-
-        let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
-        transaction.sign(privateKey);
-
-        var result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
-        result.status === true ? console.log('\x1b[94m\x1b[51m%s\x1b[0m', "Succussfully Add Liquidity to CAKE-BNB!\n") : console.log("Fail to Add Liquidity to CAKE-BNB\n");
-        return true;    
-    
-    }
-
-    let reinvestingCakeBnbLP = async() => {
-        cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
-
-        if (parseInt(cakeBnbBalance) === 0) {
-            console.log('\x1b[91m\x1b[51m%s\x1b[0m', "Liquidity is ZERO, Auto-Compouding is STOPPING NOW\n")
-            return;
-        } else {
+        try {
+            console.log('\x1b[1m%s\x1b[0m', "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
+            console.log('\x1b[96m%s\x1b[0m', "                           START TO AUTO-COMPOUND\n");
             let count = await web3.eth.getTransactionCount(senderAddress);
-
+    
+            cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
+    
             let data = masterChefContract.methods.deposit(
                 cakeBnbPid,
-                cakeBnbBalance
+                web3.utils.toWei('0', 'ether')
                 );
-
+    
             var rawTransaction = {
                 nonce: web3.utils.toHex(count),
                 gasPrice: web3.utils.toHex(gasPrice),
@@ -298,15 +224,132 @@ const main = async () => {
                 chainId: chainId,
                 from: senderAddress
             };  
-
+    
             let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
             transaction.sign(privateKey);
-
+    
             let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
-            result.status === true ? console.log('\x1b[95m\x1b[51m%s\x1b[0m', "Succussfully Re-investing CAKE-BNB LP into the farm!\n") : console.log("Fail to re-investing CAKE-BNB LP\n");
-            return;
+            result.status === true ? console.log('\x1b[92m\x1b[51m%s\x1b[0m', "Successfully Harvested!\n") : console.log("Fail to re-investing CAKE-BNB LP\n");
+            return result;
+            
+        } catch(e) {
+            console.error(e);
         }
+    }
+
+    let swapHalfOfCake = async() => {
+        try {
+            let pricesOfHalfOfCakeBalance = await calcPricesBetweenCakeAndBnb((parseInt(cakeBalance) / 2).toString());
+
+            let count = await web3.eth.getTransactionCount(senderAddress);
+    
+            let data = pancakeRouterContract.methods.swapExactTokensForETH(
+                pricesOfHalfOfCakeBalance[0], 
+                (Math.floor(parseInt(pricesOfHalfOfCakeBalance[1])*0.99)).toString(), 
+                [cakeAddress, bnbAddress], 
+                senderAddress,
+                Date.now() + 1000 * 60 * 10
+                );
+            
+            var rawTransaction = {
+                nonce: web3.utils.toHex(count),
+                gasPrice: web3.utils.toHex(gasPrice),
+                gasLimit: web3.utils.toHex(gasLimit),
+                to: pancakeRouterAddress,
+                value: web3.utils.toHex('0'),
+                data: data.encodeABI(),
+                chainId: chainId,
+                from: senderAddress
+            };  
+    
+            let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
+            transaction.sign(privateKey);
+    
+            var result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
+            result.status === true ? console.log('\x1b[93m\x1b[51m%s\x1b[0m', "Successfully Swap Half of CAKE into BNB!\n") : console.log("Fail to Swap Half of CAKE into BNB\n");
+            return;
+            
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    let addLiquidityV2 = async() => {
+        try {
+            let cakeBalance = await cakeContract.methods.balanceOf(senderAddress).call();
+            let pricesOfCakeAndBnb = await calcPricesBetweenCakeAndBnb(cakeBalance);
+            let count = await web3.eth.getTransactionCount(senderAddress);
+    
+            let data = pancakeRouterContract.methods.addLiquidityETH(
+                cakeAddress,
+                pricesOfCakeAndBnb[0],
+                Math.floor((parseInt(pricesOfCakeAndBnb[0])*0.94).toString()).toString(),
+                Math.floor((parseInt(pricesOfCakeAndBnb[1])*0.94).toString()).toString(),
+                senderAddress,
+                Date.now() + 1000 * 60 * 10
+                );
+    
+            var rawTransaction = {
+                nonce: web3.utils.toHex(count),
+                gasPrice: web3.utils.toHex(gasPrice),
+                gasLimit: web3.utils.toHex(gasLimit),
+                to: pancakeRouterAddress,
+                value: web3.utils.toHex(pricesOfCakeAndBnb[1]),
+                data: data.encodeABI(),
+                chainId: chainId,
+                from: senderAddress
+            };  
+    
+            let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
+            transaction.sign(privateKey);
+    
+            var result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
+            result.status === true ? console.log('\x1b[94m\x1b[51m%s\x1b[0m', "Succussfully Add Liquidity to CAKE-BNB!\n") : console.log("Fail to Add Liquidity to CAKE-BNB\n");
+            return true;    
         
+        } catch(e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    let reinvestingCakeBnbLP = async() => {
+        try {
+            cakeBnbBalance = await cakeBnbContract.methods.balanceOf(senderAddress).call();
+
+            if (parseInt(cakeBnbBalance) === 0) {
+                console.log('\x1b[91m\x1b[51m%s\x1b[0m', "Liquidity is ZERO, Auto-Compouding is STOPPING NOW\n")
+                return;
+            } else {
+                let count = await web3.eth.getTransactionCount(senderAddress);
+    
+                let data = masterChefContract.methods.deposit(
+                    cakeBnbPid,
+                    cakeBnbBalance
+                    );
+    
+                var rawTransaction = {
+                    nonce: web3.utils.toHex(count),
+                    gasPrice: web3.utils.toHex(gasPrice),
+                    gasLimit: web3.utils.toHex(gasLimit),
+                    to: masterChefAddress,
+                    value: web3.utils.toHex(web3.utils.toWei('0', 'ether')),
+                    data: data.encodeABI(),
+                    chainId: chainId,
+                    from: senderAddress
+                };  
+    
+                let transaction = new Tx(rawTransaction, { 'common': BSC_FORK });
+                transaction.sign(privateKey);
+    
+                let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'));
+                result.status === true ? console.log('\x1b[95m\x1b[51m%s\x1b[0m', "Succussfully Re-investing CAKE-BNB LP into the farm!\n") : console.log("Fail to re-investing CAKE-BNB LP\n");
+                return;
+            }
+            
+        } catch(e) {
+            console.error(e);
+        }
     }
 
     setInterval(()=> {
