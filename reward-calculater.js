@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 const question1 = () => {
   return new Promise((resolve, reject) => {
       try {
-        rl.question('What is your name? \n', (name) => {
+        rl.question('\nWhat is your name? \n', (name) => {
             console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\n\n\nHi, ${name}\n`);
           resolve();
         })
@@ -52,7 +52,7 @@ const question2 = () => {
                         let initialCapital = 10000;
                         let totalGasFeePerCompound = 1.1;
                         let apr = 0.329;
-                        console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\nGiven that your initial investment is US$${initialCapital}, \nthe APR of CAKE-BNB farm is ${apr * 100}%, \nand the total gas fee per compounding is US$${totalGasFeePerCompound}\n`);
+                        console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\n\n\nGiven that your initial investment is US$${initialCapital}, \nthe APR of CAKE-BNB farm is ${apr * 100}%, \nand the total gas fee per compounding is US$${totalGasFeePerCompound}\n`);
     
                         let dailyRewardWithoutYieldFarming = (initialCapital * (apr / 365.25) * dayNumber) - totalGasFeePerCompound;
 
@@ -85,7 +85,7 @@ const question2 = () => {
                         let initialCapital = 10000;
                         let totalGasFeePerCompound = 1.1;
                         let apr = 0.329;
-                        console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\nGiven that your initial investment is US$${initialCapital}, \nthe APR of CAKE-BNB farm is ${apr * 100}%, \nand the total gas fee per compounding is US$${totalGasFeePerCompound}\n`);
+                        console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\n\n\nGiven that your initial investment is US$${initialCapital}, \nthe APR of CAKE-BNB farm is ${apr * 100}%, \nand the total gas fee per compounding is US$${totalGasFeePerCompound}\n`);
                         
     
                         let weeklyRewardWithoutYieldFarming = (initialCapital * (apr / 365.25) * weekNumber * 7) - totalGasFeePerCompound;
@@ -119,7 +119,7 @@ const question2 = () => {
                         let initialCapital = 10000;
                         let totalGasFeePerCompound = 1.1;
                         let apr = 0.329;
-                        console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\nAssuming there are 30.4375 Days (365.25 / 12) per month\n`);
+                        console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\n\n\nAssuming there are 30.4375 Days (365.25 / 12) per month\n`);
                         console.log('\x1b[93m\x1b[1m%s\x1b[0m', `Given that your initial investment is US$${initialCapital}, \nthe APR of CAKE-BNB farm is ${apr * 100}%, \nand the total gas fee per compounding is US$${totalGasFeePerCompound}\n`);
                         
                         let monthlyRewardWithoutYieldFarming = (initialCapital * (apr / 365) * monthNumber * 30) - totalGasFeePerCompound;
