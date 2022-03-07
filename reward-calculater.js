@@ -61,10 +61,10 @@ const question2 = () => {
                         // let f be the Total Gas Fee per one time of Compounding,
                         // let r be the Daily Rate of APR,
                         // 1st Day Reward = r(x) - f;
-                        // 2nd Day Reward = r(x + FirstWeekReward) - f;
-                        // 3rd Day Reward = r(x + FirstWeekReward + SecondWeekReward) - f;
-                        // 4th Day Reward = r(x + FirstWeekReward + SecondWeekReward + ThirdWeekReward) -f;
-                        // 5th Day Reward = r(x + FirstWeekReward + SecondWeekReward + ThirdWeekReward + FourthWeekReward) - f;
+                        // 2nd Day Reward = r(x + FirstDayReward) - f;
+                        // 3rd Day Reward = r(x + FirstDayReward + SecondDayReward) - f;
+                        // 4th Day Reward = r(x + FirstDayReward + SecondDayReward + ThirdDayReward) -f;
+                        // 5th Day Reward = r(x + FirstDayReward + SecondDayReward + ThirdDayReward + FourthDayReward) - f;
                         // ...
 
                         let dailyRewardWithYieldFarming = 0;
@@ -130,10 +130,10 @@ const question2 = () => {
                         // let r be the Daily Rate of APR,
                         // let m be the exact days of a month,
                         // 1st Month Reward = mr(x) - f;
-                        // 2nd Month Reward = mr(x + FirstWeekReward) - f;
-                        // 3rd Month Reward = mr(x + FirstWeekReward + SecondWeekReward) - f;
-                        // 4th Month Reward = mr(x + FirstWeekReward + SecondWeekReward + ThirdWeekReward) -f;
-                        // 5th Month Reward = mr(x + FirstWeekReward + SecondWeekReward + ThirdWeekReward + FourthWeekReward) - f;
+                        // 2nd Month Reward = mr(x + FirstMonthReward) - f;
+                        // 3rd Month Reward = mr(x + FirstMonthReward + SecondMonthReward) - f;
+                        // 4th Month Reward = mr(x + FirstMonthReward + SecondMonthReward + ThirdMonthReward) -f;
+                        // 5th Month Reward = mr(x + FirstMonthReward + SecondMonthReward + ThirdMonthReward + FourthMonthReward) - f;
                         // ...
 
                         let monthlyRewardWithYieldFarming = 0;
