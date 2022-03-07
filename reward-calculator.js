@@ -68,7 +68,7 @@ const question2 = () => {
                         // ...
 
                         let dailyRewardWithYieldFarming = 0;
-                        for (let i=1; i<dayNumber; i++) {
+                        for (let i=1; i<=dayNumber; i++) {
                             dailyRewardWithYieldFarming += (apr / 365.25) * (initialCapital + dailyRewardWithYieldFarming) - totalGasFeePerCompound;
                         }
     
@@ -77,7 +77,7 @@ const question2 = () => {
                         console.log('\x1b[92m%s\x1b[0m', `Reward of Yield Farming with DAILY Auto-Compounding = ${dailyRewardWithYieldFarming} USD\n`);
                         console.log('\x1b[96m%s\x1b[0m', `Extra Reward by DAILY Auto-Compounding = ${dailyRewardWithYieldFarming - dailyRewardWithoutYieldFarming} USD\n`);
                     }
-                    // comparisonForAutoCompoundingEveryday(number);
+                    comparisonForAutoCompoundingEveryday(number);
     
 
                     let comparisonForAutoCompoundingEveryWeek = (number) => {
@@ -102,7 +102,7 @@ const question2 = () => {
                         // ...
 
                         let weeklyRewardWithYieldFarming = 0;
-                        for (let i=1; i<weekNumber; i++) {
+                        for (let i=1; i<=weekNumber; i++) {
                             weeklyRewardWithYieldFarming += 7 * (apr / 365.25) * (initialCapital + weeklyRewardWithYieldFarming) - totalGasFeePerCompound;
                         }
 
@@ -111,7 +111,7 @@ const question2 = () => {
                         console.log('\x1b[92m%s\x1b[0m', `Reward of Yield Farming with WEEKLY Auto-Compounding = ${weeklyRewardWithYieldFarming} USD\n`);
                         console.log('\x1b[96m%s\x1b[0m', `Extra Reward by WEEKLY Auto-Compounding = ${weeklyRewardWithYieldFarming - weeklyRewardWithoutYieldFarming} USD\n`);
                     }
-                    comparisonForAutoCompoundingEveryWeek(number);
+                    // comparisonForAutoCompoundingEveryWeek(number);
                         
 
                     let comparisonForAutoCompoundingEveryMonth = (number) => {
@@ -137,7 +137,7 @@ const question2 = () => {
                         // ...
 
                         let monthlyRewardWithYieldFarming = 0;
-                        for (let i=1; i<monthNumber; i++) {
+                        for (let i=1; i<=monthNumber; i++) {
                             monthlyRewardWithYieldFarming += (365.25 / 12) * (apr / 365.25) * (initialCapital + monthlyRewardWithYieldFarming) - totalGasFeePerCompound;
                         }
 
