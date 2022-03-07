@@ -122,7 +122,7 @@ const question2 = () => {
                         console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\n\n\nAssuming there are 30.4375 Days (365.25 / 12) per month\n`);
                         console.log('\x1b[93m\x1b[1m%s\x1b[0m', `Given that your initial investment is US$${initialCapital}, \nthe APR of CAKE-BNB farm is ${apr * 100}%, \nand the total gas fee per compounding is US$${totalGasFeePerCompound}\n`);
                         
-                        let monthlyRewardWithoutYieldFarming = (initialCapital * (apr / 365) * monthNumber * 30) - totalGasFeePerCompound;
+                        let monthlyRewardWithoutYieldFarming = (initialCapital * (apr / 365) * monthNumber * (365.25 / 12)) - totalGasFeePerCompound;
     
                         // The equation:
                         // let x be Initial Capital,
