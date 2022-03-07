@@ -71,7 +71,7 @@ The advanced features of this Auto-Compounder(Ver.3):
 ---
 ## Reward Calculator    
 
-Run `node reward-calculater.js`
+Run `node reward-calculator.js`
 
 ### Description
 
