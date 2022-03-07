@@ -77,7 +77,7 @@ const question2 = () => {
                         console.log('\x1b[92m%s\x1b[0m', `Reward of Yield Farming with DAILY Auto-Compounding = ${dailyRewardWithYieldFarming} USD\n`);
                         console.log('\x1b[96m%s\x1b[0m', `Extra Reward by DAILY Auto-Compounding = ${dailyRewardWithYieldFarming - dailyRewardWithoutYieldFarming} USD\n`);
                     }
-                    comparisonForAutoCompoundingEveryday(number);
+                    // comparisonForAutoCompoundingEveryday(number);
     
 
                     let comparisonForAutoCompoundingEveryWeek = (number) => {
@@ -111,7 +111,7 @@ const question2 = () => {
                         console.log('\x1b[92m%s\x1b[0m', `Reward of Yield Farming with WEEKLY Auto-Compounding = ${weeklyRewardWithYieldFarming} USD\n`);
                         console.log('\x1b[96m%s\x1b[0m', `Extra Reward by WEEKLY Auto-Compounding = ${weeklyRewardWithYieldFarming - weeklyRewardWithoutYieldFarming} USD\n`);
                     }
-                    // comparisonForAutoCompoundingEveryWeek(number);
+                    comparisonForAutoCompoundingEveryWeek(number);
                         
 
                     let comparisonForAutoCompoundingEveryMonth = (number) => {
