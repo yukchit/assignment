@@ -22,7 +22,7 @@ const question1 = () => {
 const question2 = () => {
     return new Promise((resolve, reject) => {
         try {
-            console.log('\x1b[93m\x1b[1m%s\x1b[0m', "I'm a calculator for preparing the extra reward between using & without yield farming \nwhen you are investing into the CAKE-BNB farm in PancakeSwap.\n");
+            console.log('\x1b[93m\x1b[1m%s\x1b[0m', "I'm a calculator for preparing the extra reward between using & without using auto-compounding \nwhen you are investing into the CAKE-BNB farm in PancakeSwap.\n");
 
             var recursiveAsyncReadLine = function () {
                 rl.question("How many Week(s) after your first day of investment do you wanna know the comparison?\n", function (number) {
