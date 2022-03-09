@@ -1,17 +1,37 @@
 const readline = require("readline");
+const figlet = require("figlet");
+const gradient = require("gradient-string");
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
 
+const title = async() => {
+    return new Promise((resolve, reject) => {
+        try {
+            console.clear();
+            figlet(`Reward Calculator`, (err, data) => {
+                console.log('\n\n'+ gradient.pastel.multiline(data) + '\n');
+                resolve();
+             })   
+        } catch(e) {
+            console.error(e);
+            reject();
+        }
+    })
+}
+
 const question1 = () => {
   return new Promise((resolve, reject) => {
       try {
-        rl.question('\nWhat is your name? \n', (name) => {
-            console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\n\n\nHi, ${name}\n`);
-          resolve();
-        })
+
+            rl.question('\nWhat is your name? \n', (name) => {
+                console.log('\x1b[93m\x1b[1m%s\x1b[0m', `\n\nHi, ${name}\n`);
+                resolve();
+            })
+        
+
       } catch(e) {
           console.error(e);
           reject();
@@ -162,6 +182,7 @@ const question2 = () => {
 
 const main = async () => {
     try {
+        await title();
         await question1();
         await question2();
         rl.close();

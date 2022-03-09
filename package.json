@@ -13,6 +13,8 @@
     "ethereumjs-common": "^1.5.2",
     "ethereumjs-tx": "^2.1.2",
     "ethers": "^5.5.4",
+    "figlet": "^1.5.2",
+    "gradient-string": "^2.0.0",
     "web3": "^1.7.0"
   }
 }
