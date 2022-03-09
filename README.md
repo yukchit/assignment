@@ -75,10 +75,9 @@ Run `node reward-calculator.js`
 
 ### Description
 
-- This Reward Calculator assumes the frequency of yield farming is auto-compounding once a week.
-- It assumes the initial investment is US$10,000 .
+- This Reward Calculator calculates the rewards of both normal staking investment and yield farming with auto-compounding once a week.
 - It assumes the total gas fee for each compounding is US$1.1 .
-- It calculates the rewards of both normal staking investment and yield farming with auto-compounding once a week.
+- It assumes the APR of the CAKE-BNB Farm is 32.9%
 - It would exit if user enter non-number or number that is smaller than 1.
 
 ---
