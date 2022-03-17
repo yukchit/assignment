@@ -24,22 +24,22 @@ Run `node auto-compounder.js`
 
 https://www.dropbox.com/s/c8dnibavhe7i8xs/Auto-Compounder%28Ver%201%29.mov?dl=0
 
-This auto-compounder show the balances of: 
+This auto-compounder shows the balances of: 
 - **CAKE** (Wallet)
 - **BNB** (Wallet)
 - **CAKE-BNB LP Tokens** (Wallet)
 - **Pending Rewards of CAKE** (from the CAKE-BNB Farm)
 
-It also estimate all the gas fees needed for the transactions for each auto-compounding and sum it up:
+It also estimates all the gas fees needed for the transactions for each auto-compounding and sum it up:
 - Harvesting CAKE
 - Swapping half amount of CAKE into BNB
 - Adding liquidity of CAKE-BNB by pairing CAKE & BNB
 - Re-investing all CAKE-BNB LP Tokens into the farm 
 
-1. It would continuously to auto-compound. 
+1. It would auto-compound continuously by given time interval. 
 2. In case there is no liquidity of CAKE-BNB, it would stop re-investing for this particular time.
 3. But it would still be triggered to start auto-compounding again by next time interval.
-4. For this Auto-Compounder(Ver.1) the time-interval can be simply increased by changing the [time interval](https://github.com/yukchit/assignment/blob/main/auto-compounder.js#L336) to avoid spending too much gas fees for harvesting too frequent.
+4. For this Auto-Compounder(Ver.1) the time-interval can be simply increased by changing the [time interval in milliseconds](https://github.com/yukchit/assignment/blob/main/auto-compounder.js#L336) to avoid spending too much gas fees for harvesting too frequently.
 
 ---
 ## Start the Auto-Compounder (Ver. 2)
