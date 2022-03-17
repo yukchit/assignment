@@ -40,7 +40,7 @@ const question1 = () => {
 const question2 = () => {
     return new Promise((resolve, reject) => {
         try {
-            console.log('\x1b[93m\x1b[1m%s\x1b[0m', "I'm a calculator for preparing the extra reward between using & without using auto-compounding \nwhen you are investing into the CAKE-BNB farm in PancakeSwap.\n");
+            console.log('\x1b[93m\x1b[1m%s\x1b[0m', "I'm a calculator for comparing the extra reward between using & without using auto-compounding \nwhen you are investing into the CAKE-BNB farm in PancakeSwap.\n");
 
             var recursiveAsyncReadLine = function () {
                 rl.question("How much money in US dollars is your initial capital?\n", function(initialCapital) {
@@ -72,11 +72,11 @@ const question2 = () => {
                                 // let f be the Total Gas Fee per one time of Compounding,
                                 // let r be the Daily Rate of APR,
                                 // let t be the time interval in day between each auto-compounding,
-                                // 1st Week Reward = tr(x) - f;
-                                // 2nd Week Reward = tr(x + FirstWeekReward) - f;
-                                // 3rd Week Reward = tr(x + FirstWeekReward + SecondWeekReward) - f;
-                                // 4th Week Reward = tr(x + FirstWeekReward + SecondWeekReward + ThirdWeekReward) -f;
-                                // 5th Week Reward = tr(x + FirstWeekReward + SecondWeekReward + ThirdWeekReward + FourthWeekReward) - f;
+                                // 1st Time Reward = tr(x) - f;
+                                // 2nd Time Reward = tr(x + FirstTimeReward) - f;
+                                // 3rd Time Reward = tr(x + FirstTimeReward + SecondTimeReward) - f;
+                                // 4th Time Reward = tr(x + FirstTimeReward + SecondTimeReward + ThirdTimeReward) -f;
+                                // 5th Time Reward = tr(x + FirstTimeReward + SecondTimeReward + ThirdTimeReward + FourthTimeReward) - f;
                                 // ...
         
                                 let rewardWithYieldFarming = 0;
